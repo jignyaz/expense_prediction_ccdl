@@ -16,6 +16,16 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+# Azure configuration check function
+def check_azure_config():
+    required_vars = ['AZURE_CLIENT_ID', 'AZURE_CLIENT_SECRET', 'AZURE_TENANT_ID']
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
+    
+    if missing_vars:
+        app.logger.warning(f"Missing Azure environment variables: {missing_vars}")
+    
+    return len(missing_vars) == 0
+
 # Route to serve the dark mode UI
 @app.route('/')
 def index():
@@ -25,6 +35,10 @@ def index():
 @app.route('/dark_mode_demo')
 def dark_mode_demo():
     return send_from_directory('.', 'dark_mode_demo.html')
+
+@app.route('/health')
+def health_check():
+    return jsonify({"status": "healthy"})
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -169,4 +183,9 @@ def train_model():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Check Azure configuration before starting
+    if check_azure_config():
+        app.run(host='0.0.0.0', port=5000, debug=False)
+    else:
+        print("Warning: Missing Azure configuration. App may not function properly in cloud environment.")
+        app.run(host='0.0.0.0', port=5000, debug=False)
