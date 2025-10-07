@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en" class="dark-mode">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpensePredict | Dark Mode</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Add Bootstrap JS for components -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        :root {
+            --body-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+        }
+        
+        .dark-mode {
+            --body-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --primary-color: #818cf8;
+            --primary-hover: #6366f1;
+            --success-color: #34d399;
+            --danger-color: #f87171;
+            --warning-color: #fbbf24;
+            --info-color: #60a5fa;
+        }
+        
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .card-header {
+            background-color: var(--card-bg);
+            border-bottom-color: var(--border-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+        
+        input, select, textarea, .form-control, .form-select {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+        }
+        
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+        
+        .alert-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        .alert-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+        
+        .alert-info {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: var(--info-color);
+            color: var(--info-color);
+        }
+        
+        .table {
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        
+        .badge {
+            background-color: var(--primary-color);
+        }
+        
+        .chart-container {
+            background-color: var(--card-bg);
+            border-radius: 0.5rem;
+        }
+        
+        .navbar {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .navbar-brand {
+            color: var(--primary-color);
+        }
+        
+        .nav-link {
+            color: var(--text-color);
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-chart-line me-2"></i>ExpensePredict
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-dollar-sign me-1"></i> Data Entry</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-chart-bar me-1"></i> Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-magic me-1"></i> Predictions</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <button id="themeToggle" class="btn btn-sm" style="background-color: rgba(99, 102, 241, 0.2); color: #6366f1;">
+                            <i class="fas fa-sun"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="mb-4"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Expense Dashboard</h2>
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <div class="mb-3">
+                                            <i class="fas fa-wallet fa-2x text-primary"></i>
+                                        </div>
+                                        <h5>Monthly Average</h5>
+                                        <h3 class="mb-0">$580.50</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <div class="mb-3">
+                                            <i class="fas fa-arrow-trend-up fa-2x text-success"></i>
+                                        </div>
+                                        <h5>Highest Month</h5>
+                                        <h3 class="mb-0">$670.00</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <div class="mb-3">
+                                            <i class="fas fa-arrow-trend-down fa-2x text-danger"></i>
+                                        </div>
+                                        <h5>Lowest Month</h5>
+                                        <h3 class="mb-0">$570.00</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <div class="mb-3">
+                                            <i class="fas fa-chart-pie fa-2x text-warning"></i>
+                                        </div>
+                                        <h5>Next Prediction</h5>
+                                        <h3 class="mb-0">$650.75</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Monthly Spending Trends</h5>
+                        <div>
+                            <i class="fas fa-chart-line text-secondary"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="monthlyTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Spending by Category</h5>
+                        <div>
+                            <i class="fas fa-chart-pie text-secondary"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Predict Next Expense</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- CSV Upload Section -->
+                        <div class="mb-4">
+                            <h6 class="mb-3"><i class="fas fa-file-csv me-2"></i>Upload Expense Data</h6>
+                            <div class="mb-3">
+                                <label for="csvFile" class="form-label">Upload CSV File</label>
+                                <input class="form-control" type="file" id="csvFile" accept=".csv">
+                                <div class="form-text">Upload a CSV file with your expense data. The file should have columns for date and expense amount.</div>
+                            </div>
+                            <button id="uploadBtn" class="btn btn-primary">Upload & Process</button>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <!-- Data Entry Section -->
+                        <div class="mb-4">
+                            <h6 class="mb-3"><i class="fas fa-edit me-2"></i>Manual Data Entry</h6>
+                            <div class="mb-3">
+                                <label for="expenseDate" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="expenseDate">
+                            </div>
+                            <div class="mb-3">
+                                <label for="expenseAmount" class="form-label">Expense Amount ($)</label>
+                                <input type="number" class="form-control" id="expenseAmount" min="0" step="0.01" placeholder="e.g. 570.50">
+                            </div>
+                            <div class="mb-3">
+                                <label for="expenseCategory" class="form-label">Category</label>
+                                <select class="form-select" id="expenseCategory">
+                                    <option value="Food">Food</option>
+                                    <option value="Transport">Transport</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Utilities">Utilities</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <button id="addExpenseBtn" class="btn btn-primary">Add Expense</button>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <!-- Expense Table -->
+                        <div class="mb-4">
+                            <h6 class="mb-3"><i class="fas fa-table me-2"></i>Expense Records</h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="expenseTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Category</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="expenseTableBody">
+                                        <!-- Expense records will be added here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="noExpensesMessage" class="text-center py-3">
+                                <p class="text-muted">No expense records found. Add expenses using the form above or upload a CSV file.</p>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <!-- Prediction Section -->
+                        <div class="mb-3">
+                            <h6 class="mb-3"><i class="fas fa-chart-line me-2"></i>Prediction Options</h6>
+                            <div class="mb-3">
+                                <label for="historicalExpenses" class="form-label">Historical Expenses (comma-separated)</label>
+                                <textarea class="form-control" id="historicalExpenses" rows="3" placeholder="570, 580, 570, 670, 590, 575, ..."></textarea>
+                            </div>
+                            <button id="predictBtn" class="btn btn-primary">Predict Next Expense</button>
+                        </div>
+                        
+                        <div id="resultSection" class="mt-4 d-none">
+                            <div class="alert alert-success">
+                                <h5 class="alert-heading">Prediction Result</h5>
+                                <p>Predicted next expense: <strong id="predictionResult">$650.75</strong></p>
+                            </div>
+                        </div>
+                        
+                        <div id="errorSection" class="mt-4 d-none">
+                            <div class="alert alert-danger">
+                                <h5 class="alert-heading">Error</h5>
+                                <p id="errorMessage"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <form id="prediction-form">
+                                <div class="row mb-3">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="expense1" class="form-label">Month 1 Expense ($)</label>
+                                        <input type="number" class="form-control" id="expense1" placeholder="e.g. 570" required min="1">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="expense2" class="form-label">Month 2 Expense ($)</label>
+                                        <input type="number" class="form-control" id="expense2" placeholder="e.g. 580" required min="1">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="expense3" class="form-label">Month 3 Expense ($)</label>
+                                        <input type="number" class="form-control" id="expense3" placeholder="e.g. 570" required min="1">
+                                    </div>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="button" class="btn btn-primary" id="formPredictBtn">Calculate Prediction</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Quick Insights</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h5 class="alert-heading">Spending Pattern</h5>
+                            <p>Your expenses show a stable pattern with slight increases in October.</p>
+                        </div>
+                        <div class="alert alert-warning">
+                            <h5 class="alert-heading">Budget Alert</h5>
+                            <p>You're approaching your monthly budget limit of $700.</p>
+                        </div>
+                        <div class="alert alert-success">
+                            <h5 class="alert-heading">Savings Opportunity</h5>
+                            <p>Reducing food expenses by 10% could save you $40 monthly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set dark mode as default
+            document.documentElement.classList.add('dark-mode');
+            
+            // Initialize theme toggle
+            const themeToggle = document.getElementById('themeToggle');
+            
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    document.documentElement.classList.toggle('dark-mode');
+                    updateThemeIcon();
+                });
+                
+                // Set initial icon based on current theme
+                updateThemeIcon();
+            }
+            
+            function updateThemeIcon() {
+                const isDarkMode = document.documentElement.classList.contains('dark-mode');
+                themeToggle.innerHTML = isDarkMode ? 
+                    '<i class="fas fa-sun"></i>' : 
+                    '<i class="fas fa-moon"></i>';
+                themeToggle.setAttribute('title', isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+            }
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Initialize expense data array
+            let expenseData = [];
+            
+            // Handle CSV file upload
+            const uploadBtn = document.getElementById('uploadBtn');
+            const csvFileInput = document.getElementById('csvFile');
+            
+            if (uploadBtn && csvFileInput) {
+                uploadBtn.addEventListener('click', function() {
+                    if (!csvFileInput.files.length) {
+                        showError('Please select a CSV file to upload');
+                        return;
+                    }
+                    
+                    const file = csvFileInput.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        try {
+                            const csvData = e.target.result;
+                            processCSVData(csvData);
+                        } catch (error) {
+                            showError('Error processing CSV file: ' + error.message);
+                        }
+                    };
+                    
+                    reader.onerror = function() {
+                        showError('Error reading the CSV file');
+                    };
+                    
+                    reader.readAsText(file);
+                });
+            }
+            
+            // Process CSV data
+            function processCSVData(csvData) {
+                // Split the CSV data into rows
+                const rows = csvData.split('\n');
+                
+                // Get the header row
+                const headers = rows[0].split(',').map(header => header.trim());
+                
+                // Find the date and expense amount column indices
+                const dateIndex = headers.findIndex(header => 
+                    header.toLowerCase().includes('date') || 
+                    header.toLowerCase().includes('month'));
+                
+                const amountIndex = headers.findIndex(header => 
+                    header.toLowerCase().includes('expense') || 
+                    header.toLowerCase().includes('amount') || 
+                    header.toLowerCase().includes('cost'));
+                
+                const categoryIndex = headers.findIndex(header => 
+                    header.toLowerCase().includes('category') || 
+                    header.toLowerCase().includes('type'));
+                
+                if (dateIndex === -1 || amountIndex === -1) {
+                    showError('CSV file must contain date and expense amount columns');
+                    return;
+                }
+                
+                // Process each data row
+                for (let i = 1; i < rows.length; i++) {
+                    if (!rows[i].trim()) continue; // Skip empty rows
+                    
+                    const columns = rows[i].split(',').map(col => col.trim());
+                    
+                    if (columns.length <= Math.max(dateIndex, amountIndex)) continue;
+                    
+                    const date = columns[dateIndex];
+                    const amount = parseFloat(columns[amountIndex].replace(/[^0-9.-]+/g, ''));
+                    const category = categoryIndex !== -1 ? columns[categoryIndex] : 'Other';
+                    
+                    if (!isNaN(amount)) {
+                        addExpenseToData({
+                            date: date,
+                            amount: amount,
+                            category: category
+                        });
+                    }
+                }
+                
+                // Update the UI
+                updateExpenseTable();
+                updateHistoricalExpensesField();
+                
+                // Show success message
+                showSuccess('CSV file processed successfully. ' + (expenseData.length) + ' expense records loaded.');
+            }
+            
+            // Handle manual expense entry
+            const addExpenseBtn = document.getElementById('addExpenseBtn');
+            const expenseDateInput = document.getElementById('expenseDate');
+            const expenseAmountInput = document.getElementById('expenseAmount');
+            const expenseCategoryInput = document.getElementById('expenseCategory');
+            
+            if (addExpenseBtn) {
+                addExpenseBtn.addEventListener('click', function() {
+                    // Validate inputs
+                    if (!expenseDateInput.value) {
+                        showError('Please select a date');
+                        return;
+                    }
+                    
+                    const amount = parseFloat(expenseAmountInput.value);
+                    if (isNaN(amount) || amount <= 0) {
+                        showError('Please enter a valid positive expense amount');
+                        return;
+                    }
+                    
+                    // Add expense to data
+                    addExpenseToData({
+                        date: expenseDateInput.value,
+                        amount: amount,
+                        category: expenseCategoryInput.value
+                    });
+                    
+                    // Update the UI
+                    updateExpenseTable();
+                    updateHistoricalExpensesField();
+                    
+                    // Clear form inputs
+                    expenseDateInput.value = '';
+                    expenseAmountInput.value = '';
+                    expenseCategoryInput.selectedIndex = 0;
+                    
+                    // Show success message
+                    showSuccess('Expense added successfully');
+                });
+            }
+            
+            // Add expense to data array
+            function addExpenseToData(expense) {
+                expenseData.push(expense);
+                
+                // Sort by date
+                expenseData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            }
+            
+            // Update expense table
+            function updateExpenseTable() {
+                const tableBody = document.getElementById('expenseTableBody');
+                const noExpensesMessage = document.getElementById('noExpensesMessage');
+                
+                if (!tableBody) return;
+                
+                // Clear table
+                tableBody.innerHTML = '';
+                
+                // Show/hide no expenses message
+                if (expenseData.length === 0) {
+                    noExpensesMessage.classList.remove('d-none');
+                    return;
+                } else {
+                    noExpensesMessage.classList.add('d-none');
+                }
+                
+                // Add expense rows
+                expenseData.forEach((expense, index) => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${formatDate(expense.date)}</td>
+                        <td>$${expense.amount.toFixed(2)}</td>
+                        <td>${expense.category}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger delete-expense" data-index="${index}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-expense').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        expenseData.splice(index, 1);
+                        updateExpenseTable();
+                        updateHistoricalExpensesField();
+                    });
+                });
+            }
+            
+            // Format date for display
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                
+                return date.toLocaleDateString();
+            }
+            
+            // Update historical expenses field with expense amounts
+            function updateHistoricalExpensesField() {
+                const historicalExpensesField = document.getElementById('historicalExpenses');
+                if (!historicalExpensesField) return;
+                
+                const expenseAmounts = expenseData.map(expense => expense.amount);
+                historicalExpensesField.value = expenseAmounts.join(', ');
+                
+                // Also update the prediction form fields if we have enough data
+                if (expenseAmounts.length >= 3) {
+                    const expense1Input = document.getElementById('expense1');
+                    const expense2Input = document.getElementById('expense2');
+                    const expense3Input = document.getElementById('expense3');
+                    
+                    if (expense1Input && expense2Input && expense3Input) {
+                        const lastThreeExpenses = expenseAmounts.slice(-3);
+                        expense1Input.value = lastThreeExpenses[0];
+                        expense2Input.value = lastThreeExpenses[1];
+                        expense3Input.value = lastThreeExpenses[2];
+                    }
+                }
+            }
+            
+            // Show success message
+            function showSuccess(message) {
+                // Create a success alert
+                const successAlert = document.createElement('div');
+                successAlert.className = 'alert alert-success alert-dismissible fade show mt-3';
+                successAlert.innerHTML = `
+                    <strong>Success!</strong> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                // Add to the page
+                const cardBody = document.querySelector('.card-body');
+                cardBody.insertBefore(successAlert, cardBody.firstChild);
+                
+                // Auto-dismiss after 5 seconds
+                setTimeout(() => {
+                    successAlert.classList.remove('show');
+                    setTimeout(() => successAlert.remove(), 500);
+                }, 5000);
+            }
+            
+            // Handle prediction button click
+            const predictBtn = document.getElementById('predictBtn');
+            const formPredictBtn = document.getElementById('formPredictBtn');
+            const resultSection = document.getElementById('resultSection');
+            const errorSection = document.getElementById('errorSection');
+            const errorMessage = document.getElementById('errorMessage');
+            const predictionForm = document.getElementById('prediction-form');
+            
+            if (predictBtn) {
+                predictBtn.addEventListener('click', function() {
+                    const historicalExpenses = document.getElementById('historicalExpenses').value.trim();
+                    
+                    if (!historicalExpenses) {
+                        showError('Please enter historical expense values');
+                        return;
+                    }
+                    
+                    try {
+                        // Parse the historical expenses
+                        const expenses = historicalExpenses.split(',')
+                            .map(value => parseFloat(value.trim()))
+                            .filter(value => !isNaN(value));
+                        
+                        if (expenses.length < 3) {
+                            showError('Please provide at least 3 historical expense values');
+                            return;
+                        }
+                        
+                        // Calculate prediction
+                        const prediction = calculatePrediction(expenses);
+                        
+                        // Update prediction result
+                        document.getElementById('predictionResult').textContent = '$' + prediction.toFixed(2);
+                        
+                        // Show prediction result
+                        resultSection.classList.remove('d-none');
+                        errorSection.classList.add('d-none');
+                        
+                        // Update chart with the last 3 expenses and prediction
+                        const lastThreeExpenses = expenses.slice(-3);
+                        updateChartWithPrediction(lastThreeExpenses, prediction);
+                    } catch (error) {
+                        showError('Error calculating prediction: ' + error.message);
+                    }
+                });
+            }
+            
+            if (formPredictBtn) {
+                formPredictBtn.addEventListener('click', function() {
+                    try {
+                        // Hide any previous errors
+                        errorSection.classList.add('d-none');
+                        
+                        // Get values from the form
+                        const expense1 = parseFloat(document.getElementById('expense1').value);
+                        const expense2 = parseFloat(document.getElementById('expense2').value);
+                        const expense3 = parseFloat(document.getElementById('expense3').value);
+                        
+                        // Validate inputs
+                        if (isNaN(expense1) || isNaN(expense2) || isNaN(expense3) || 
+                            expense1 <= 0 || expense2 <= 0 || expense3 <= 0) {
+                            showError('Please enter valid positive expense values.');
+                            return;
+                        }
+                        
+                        // Calculate prediction (simple algorithm)
+                        const prediction = calculatePrediction([expense1, expense2, expense3]);
+                        
+                        // Update prediction result
+                        document.getElementById('predictionResult').textContent = '$' + prediction.toFixed(2);
+                        
+                        // Show prediction result
+                        resultSection.classList.remove('d-none');
+                        errorSection.classList.add('d-none');
+                        
+                        // Update chart with new data
+                        updateChartWithPrediction([expense1, expense2, expense3], prediction);
+                    } catch (error) {
+                        showError('An error occurred during prediction: ' + error.message);
+                    }
+                });
+            }
+        });
+            
+            function calculatePrediction(expenses) {
+                // Simple prediction logic based on historical data
+                const avgExpense = expenses.reduce((a, b) => a + b, 0) / expenses.length;
+                
+                // Add some trend analysis
+                const recentTrend = expenses[2] - expenses[0];
+                let trendFactor = 1 + (recentTrend / expenses[0]) * 0.5;
+                trendFactor = Math.max(0.9, Math.min(1.1, trendFactor));
+                
+                // Add some randomness
+                const randomFactor = 0.98 + Math.random() * 0.04;
+                
+                // Calculate prediction
+                return avgExpense * trendFactor * randomFactor;
+            }
+            
+            function updateChartWithPrediction(expenses, prediction) {
+                // Get the chart instance
+                const chart = Chart.getChart('monthlyTrendChart');
+                if (chart) {
+                    // Update chart data
+                    chart.data.labels = ['Month 1', 'Month 2', 'Month 3', 'Prediction'];
+                    chart.data.datasets[0].data = [...expenses, prediction];
+                    chart.update();
+                }
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorSection.classList.remove('d-none');
+                resultSection.classList.add('d-none');
+            }
+        
+        // Chart initialization
+        function initializeCharts() {
+            // Set Chart.js defaults for dark mode
+            Chart.defaults.color = '#a0aec0';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+            
+            // Monthly spending trend chart
+            const monthlyTrendCtx = document.getElementById('monthlyTrendChart');
+            if (monthlyTrendCtx) {
+                new Chart(monthlyTrendCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Monthly Expenses',
+                            data: [570, 580, 570, 670, 590, 575],
+                            backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                            borderColor: '#6366f1',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleColor: '#e2e8f0',
+                                bodyColor: '#e2e8f0',
+                                borderColor: '#6366f1',
+                                borderWidth: 1,
+                                padding: 10,
+                                displayColors: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value;
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Category spending chart
+            const categoryChartCtx = document.getElementById('categoryChart');
+            if (categoryChartCtx) {
+                new Chart(categoryChartCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Food', 'Transport', 'Entertainment', 'Utilities', 'Other'],
+                        datasets: [{
+                            data: [35, 25, 15, 15, 10],
+                            backgroundColor: [
+                                '#6366f1', // Indigo
+                                '#8b5cf6', // Purple
+                                '#ec4899', // Pink
+                                '#10b981', // Green
+                                '#f43f5e'  // Red
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#1e293b'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleColor: '#e2e8f0',
+                                bodyColor: '#e2e8f0',
+                                borderColor: '#6366f1',
+                                borderWidth: 1,
+                                padding: 10,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.parsed + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
