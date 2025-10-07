@@ -1,0 +1,31 @@
+# Virtual environments
+.venv
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+.Python
+
+# Environment variables
+.env
+.venv
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Large model files (optional - include if files are small)
+# models/expense_model.keras
+# models/scaler.pkl
