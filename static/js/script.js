@@ -10,74 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeCharts();
     }
     
-    const predictBtn = document.getElementById('predictBtn');
-    const historicalExpenses = document.getElementById('historicalExpenses');
-    const resultSection = document.getElementById('resultSection');
-    const predictionResult = document.getElementById('predictionResult');
-    const errorSection = document.getElementById('errorSection');
-    const errorMessage = document.getElementById('errorMessage');
-
-    predictBtn.addEventListener('click', async function() {
-        // Hide previous results/errors
-        resultSection.classList.add('d-none');
-        errorSection.classList.add('d-none');
-
-        // Get input values
-        const expensesText = historicalExpenses.value.trim();
-        if (!expensesText) {
-            showError('Please enter historical expense values');
-            return;
-        }
-
-        // Parse comma-separated values
-        const expenses = expensesText.split(',')
-            .map(value => parseFloat(value.trim()))
-            .filter(value => !isNaN(value));
-
-        if (expenses.length < 30) {
-            showError('Please enter at least 30 valid expense values');
-            return;
-        }
-
-        try {
-            // Show loading state
-            predictBtn.disabled = true;
-            predictBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Predicting...';
-
-            // Make API request
-            const response = await fetch('/predict', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    historical_expenses: expenses
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Show prediction result
-                predictionResult.textContent = `$${data.predicted_expense.toFixed(2)}`;
-                resultSection.classList.remove('d-none');
-            } else {
-                showError(data.error || 'Failed to get prediction');
-            }
-        } catch (error) {
-            showError('An error occurred while making the prediction');
-            console.error(error);
-        } finally {
-            // Reset button state
-            predictBtn.disabled = false;
-            predictBtn.textContent = 'Predict Next Expense';
-        }
-    });
-
-    function showError(message) {
-        errorMessage.textContent = message;
-        errorSection.classList.remove('d-none');
-    }
+    // Initialize prediction functionality
+    initPrediction();
 });
 
 // Theme toggle functionality
@@ -103,6 +37,80 @@ function updateThemeIcon() {
             '<i class="fas fa-sun"></i>' : 
             '<i class="fas fa-moon"></i>';
         themeToggle.setAttribute('title', isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+    }
+}
+
+// Prediction functionality
+function initPrediction() {
+    const predictBtn = document.getElementById('predictBtn');
+    const historicalExpenses = document.getElementById('historicalExpenses');
+    const resultSection = document.getElementById('resultSection');
+    const predictionResult = document.getElementById('predictionResult');
+    const errorSection = document.getElementById('errorSection');
+    const errorMessage = document.getElementById('errorMessage');
+
+    if (!predictBtn) return;
+
+    predictBtn.addEventListener('click', async function() {
+        // Hide previous results/errors
+        resultSection.classList.add('d-none');
+        errorSection.classList.add('d-none');
+
+        // Get input values
+        const expensesText = historicalExpenses.value.trim();
+        if (!expensesText) {
+            showError('Please enter historical expense values');
+            return;
+        }
+
+        // Parse comma-separated values
+        const expenses = expensesText.split(',')
+            .map(value => parseFloat(value.trim()))
+            .filter(value => !isNaN(value));
+
+        if (expenses.length < 3) {  // Changed from 30 to 3 to match your Flask app
+            showError('Please enter at least 3 valid expense values');
+            return;
+        }
+
+        try {
+            // Show loading state
+            predictBtn.disabled = true;
+            predictBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Predicting...';
+
+            // Make API request - CORRECTED parameter name
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    expenses: expenses  // ✅ CORRECT - matches Flask app expectation
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Show prediction result - CORRECTED field name
+                predictionResult.textContent = `$${data.prediction.toFixed(2)}`;  // ✅ Changed from predicted_expense to prediction
+                resultSection.classList.remove('d-none');
+            } else {
+                showError(data.error || 'Failed to get prediction');
+            }
+        } catch (error) {
+            showError('An error occurred while making the prediction');
+            console.error(error);
+        } finally {
+            // Reset button state
+            predictBtn.disabled = false;
+            predictBtn.innerHTML = '<i class="fas fa-magic me-2"></i>Generate Prediction';
+        }
+    });
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorSection.classList.remove('d-none');
     }
 }
 
@@ -212,73 +220,3 @@ function initializeCharts() {
         });
     }
 }
-    
-    const predictBtn = document.getElementById('predictBtn');
-    const historicalExpenses = document.getElementById('historicalExpenses');
-    const resultSection = document.getElementById('resultSection');
-    const predictionResult = document.getElementById('predictionResult');
-    const errorSection = document.getElementById('errorSection');
-    const errorMessage = document.getElementById('errorMessage');
-
-    predictBtn.addEventListener('click', async function() {
-        // Hide previous results/errors
-        resultSection.classList.add('d-none');
-        errorSection.classList.add('d-none');
-
-        // Get input values
-        const expensesText = historicalExpenses.value.trim();
-        if (!expensesText) {
-            showError('Please enter historical expense values');
-            return;
-        }
-
-        // Parse comma-separated values
-        const expenses = expensesText.split(',')
-            .map(value => parseFloat(value.trim()))
-            .filter(value => !isNaN(value));
-
-        if (expenses.length < 30) {
-            showError('Please enter at least 30 valid expense values');
-            return;
-        }
-
-        try {
-            // Show loading state
-            predictBtn.disabled = true;
-            predictBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Predicting...';
-
-            // Make API request
-            const response = await fetch('/predict', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    historical_expenses: expenses
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Show prediction result
-                predictionResult.textContent = `$${data.predicted_expense.toFixed(2)}`;
-                resultSection.classList.remove('d-none');
-            } else {
-                showError(data.error || 'Failed to get prediction');
-            }
-        } catch (error) {
-            showError('An error occurred while making the prediction');
-            console.error(error);
-        } finally {
-            // Reset button state
-            predictBtn.disabled = false;
-            predictBtn.textContent = 'Predict Next Expense';
-        }
-    });
-
-    function showError(message) {
-        errorMessage.textContent = message;
-        errorSection.classList.remove('d-none');
-    }
-// No extra closing brace needed; the file already ends properly
