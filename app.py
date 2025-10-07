@@ -12,6 +12,18 @@ app.config['ALLOWED_EXTENSIONS'] = {'csv'}
 # Create uploads folder if it doesn't exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+try:
+    model = tf.keras.models.load_model('models/lstm_model.h5')
+    scaler = joblib.load('models/scaler.pkl')
+    window_size = joblib.load('models/window_size.pkl')
+    feature_info = joblib.load('models/feature_info.pkl')
+    print("✅ ML models loaded successfully")
+except Exception as e:
+    print(f"❌ Model loading failed: {e}")
+    model = None
+    scaler = None
+    window_size = 30  # default fallback
+    print("⚠️ Using simple prediction fallback")
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -189,3 +201,4 @@ if __name__ == '__main__':
     else:
         print("Warning: Missing Azure configuration. App may not function properly in cloud environment.")
         app.run(host='0.0.0.0', port=5000, debug=False)
+
