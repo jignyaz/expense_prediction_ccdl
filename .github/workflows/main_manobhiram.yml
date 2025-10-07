@@ -26,8 +26,19 @@ jobs:
           source venv/bin/activate
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
-        
+        run: |
+          pwd
+          ls -la
+          echo "Looking for requirements.txt..."
+          if [ -f requirements.txt ]; then
+            echo "requirements.txt found!"
+            cat requirements.txt
+            pip install -r requirements.txt
+          else
+            echo "requirements.txt NOT found!"
+            ls -la
+          fi
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
