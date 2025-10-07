@@ -27,6 +27,11 @@ except Exception as e:
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+    
+flask_env = os.getenv('FLASK_ENV', 'development')
+client_id = os.getenv('AZURE_CLIENT_ID')
+client_secret = os.getenv('AZURE_CLIENT_SECRET') 
+tenant_id = os.getenv('AZURE_TENANT_ID')
 
 # Azure configuration check function
 def check_azure_config():
@@ -201,4 +206,5 @@ if __name__ == '__main__':
     else:
         print("Warning: Missing Azure configuration. App may not function properly in cloud environment.")
         app.run(host='0.0.0.0', port=5000, debug=False)
+
 
